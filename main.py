@@ -4,18 +4,32 @@ import json
 
 
 def get_html(url):
-    response = requests.get(url)
-    return response.text
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Произошла ошибка при отправке запроса: {e}")
+        return None
+    else:
+        return response.text
 
 
 def parse_html(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    return soup
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+    except Exception as e:
+        print(f"Произошла ошибка при анализе HTML: {e}")
+        return None
+    else:
+        return soup
 
 
 def save_data(data, filename):
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        print(f"Произошла ошибка при сохранении данных: {e}")
 
 
 def extract_data(soup):
@@ -66,7 +80,9 @@ def extract_data(soup):
 
 url = 'https://sputnik.by/'
 html = get_html(url)
-soup = parse_html(html)
-data = extract_data(soup)
-save_data(data, 'data.json')
-print(data)
+if html is not None:
+    soup = parse_html(html)
+    if soup is not None:
+        data = extract_data(soup)
+        if data is not None:
+            save_data(data, 'data.json')

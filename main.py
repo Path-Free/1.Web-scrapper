@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import re
+import json
 
 
 def get_html(url):
@@ -11,6 +11,11 @@ def get_html(url):
 def parse_html(html):
     soup = BeautifulSoup(html, 'html.parser')
     return soup
+
+
+def save_data(data, filename):
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 def extract_data(soup):
@@ -63,4 +68,5 @@ url = 'https://sputnik.by/'
 html = get_html(url)
 soup = parse_html(html)
 data = extract_data(soup)
+save_data(data, 'data.json')
 print(data)
